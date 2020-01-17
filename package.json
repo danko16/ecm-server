@@ -1,0 +1,47 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "_moduleAliases": {
+    "@models": "src/models"
+  },
+  "scripts": {
+    "reset:all": "node_modules/.bin/sequelize db:drop && node_modules/.bin/sequelize db:create && node_modules/.bin/sequelize db:migrate",
+    "test": "npm run eslint && npm run mocha",
+    "eslint": "node_modules/.bin/eslint --fix src/. test/. --config .eslintrc.json",
+    "start": "node_modules/.bin/nodemon --exec node src/",
+    "mocha": "node_modules/.bin/mocha test/ --recursive --exit",
+    "precommit": "lint-staged"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.2.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "module-alias": "^2.2.2",
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.3",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.0.10",
+    "lint-staged": "^9.5.0",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "prettier-eslint": "^9.0.1",
+    "sequelize-cli": "^5.5.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "node_modules/.bin/prettier --config --write",
+      "npm run eslint",
+      "git add"
+    ]
+  }
+}
