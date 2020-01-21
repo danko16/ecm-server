@@ -8,16 +8,14 @@ module.exports = {
     dialect: 'mysql',
     dialectOptions: {
       dateStrings: true,
-      typeCast: true,
-      timezone: 'Asia/Jakarta' //for reading from database
+      typeCast: true
     },
     pool: {
       max: 50,
       min: 0,
       acquire: 1000000,
       idle: 10000
-    },
-    timezone: 'Asia/Jakarta'
+    }
   },
   test: {
     username: process.env.TEST_USER,
@@ -27,16 +25,14 @@ module.exports = {
     dialect: 'mysql',
     dialectOptions: {
       dateStrings: true,
-      typeCast: true,
-      timezone: 'Asia/Jakarta' //for reading from database
+      typeCast: true
     },
     pool: {
       max: 50,
       min: 0,
       acquire: 1000000,
       idle: 10000
-    },
-    timezone: 'Asia/Jakarta'
+    }
   },
   production: {
     username: process.env.PROD_USER,
@@ -46,15 +42,13 @@ module.exports = {
     dialect: 'mysql',
     dialectOptions: {
       dateStrings: true,
-      typeCast: true,
-      timezone: 'Asia/Jakarta' //for reading from database
+      typeCast: true
     },
     pool: {
       max: 50,
       min: 0,
       acquire: 1000000,
       idle: 10000
-    },
-    timezone: 'Asia/Jakarta'
+    }
   }
 };

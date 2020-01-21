@@ -4,29 +4,42 @@
   "description": "",
   "main": "index.js",
   "_moduleAliases": {
-    "@models": "src/models"
+    "@models": "src/models",
+    "@services": "src/services",
+    "@utils": "src/utils"
   },
   "scripts": {
     "reset:all": "node_modules/.bin/sequelize db:drop && node_modules/.bin/sequelize db:create && node_modules/.bin/sequelize db:migrate",
     "test": "npm run eslint && npm run mocha",
+    "start": "node dist/",
+    "build": "./node_modules/.bin/babel src -d dist",
+    "babel-node": "./node_modules/.bin/babel-node",
+    "dev": "./node_modules/.bin/nodemon --exec npm run babel-node src/",
+    "production": "npm run build && npm run start",
     "eslint": "node_modules/.bin/eslint --fix src/. test/. --config .eslintrc.json",
-    "start": "node_modules/.bin/nodemon --exec node src/",
-    "mocha": "node_modules/.bin/mocha test/ --recursive --exit",
     "precommit": "lint-staged"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "config": "^3.2.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^6.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
     "mysql2": "^2.1.0",
     "sequelize": "^5.21.3",
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",

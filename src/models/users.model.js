@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.INTEGER
       },
       full_name: {
-        allowNull: true,
+        allowNull: false,
         type: DataTypes.STRING,
         validate: {
           max: {
@@ -21,20 +21,24 @@ module.exports = function(sequelize, DataTypes) {
         }
       },
       email: {
-        allowNull: true,
+        allowNull: false,
+        type: DataTypes.STRING,
+        unique: true
+      },
+      phone: {
+        allowNull: false,
         type: DataTypes.STRING,
         unique: true
       },
       password: {
-        allowNull: true,
+        allowNull: false,
         type: DataTypes.STRING
       },
-
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: DataTypes.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: DataTypes.DATE
       }
@@ -46,7 +50,12 @@ module.exports = function(sequelize, DataTypes) {
   );
 
   // eslint-disable-next-line no-unused-vars
-  User.associate = function(models) {};
+  User.associate = function(models) {
+    User.hasMany(models.access_tokens, {
+      foreignKey: 'user_id',
+      onDelete: 'CASCADE'
+    });
+  };
 
   User.prototype.toJSON = function() {
     const values = Object.assign({}, this.get());

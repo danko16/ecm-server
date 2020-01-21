@@ -1,5 +1,13 @@
-require('module-alias/register');
-const express = require('express');
+import 'module-alias/register';
+import express from 'express';
+
+import routes from './routes';
+
 const app = express();
 
-module.exports = app;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/v1', routes.v1);
+
+export default app;
