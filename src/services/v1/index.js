@@ -1,5 +1,5 @@
-import meService from './me/me.service';
+const meService = require('./me/me.service');
 
-export default {
+module.exports = {
   meService
 };

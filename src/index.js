@@ -1,11 +1,10 @@
-import 'module-alias/register';
-import { createLogger, format, transports } from 'winston';
-import config from 'config';
-import { sequelize } from '@models';
-import { config as dotenv } from 'dotenv';
-dotenv();
+require('dotenv').config();
+require('module-alias/register');
+const { createLogger, format, transports } = require('winston');
+const config = require('config');
+const { sequelize } = require('@models');
 
-import app from './app';
+const app = require('./app');
 
 const logger = createLogger({
   format: format.combine(format.splat(), format.simple()),

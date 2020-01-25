@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
-import _ from 'lodash';
-import { users as User } from '@models';
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
+const { users: User } = require('@models');
 
 class Jwt {
   constructor() {}
@@ -67,4 +67,4 @@ class Jwt {
   }
 }
 
-export default Jwt;
+module.exports = Jwt;

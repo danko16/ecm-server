@@ -1,8 +1,8 @@
-import response from './response';
-import Jwt from './jwt';
-import auth from './auth';
+const response = require('./response');
+const Jwt = require('./jwt');
+const auth = require('./auth');
 
-export default {
+module.exports = {
   auth,
   jwt: new Jwt(),
   response

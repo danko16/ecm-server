@@ -1,10 +1,8 @@
-import { Op } from 'sequelize';
-import { sequelize, users as User, access_tokens as AccessToken } from '@models';
-import utils from '@utils';
-import { secret1, secret2 } from 'config';
-import bcrypt from 'bcryptjs';
-
-const { response, jwt } = utils;
+const { Op } = require('sequelize');
+const { sequelize, users: User, access_tokens: AccessToken } = require('@models');
+const { response, jwt } = require('@utils');
+const { secret1, secret2 } = require('config');
+const bcrypt = require('bcryptjs');
 
 const meService = {
   register: async (req, res) => {
@@ -13,12 +11,14 @@ const meService = {
     const transaction = await sequelize.transaction();
 
     try {
-      const email = await User.findOne({ where: { email: data.email } });
-      if (email) {
+      const isExist = await User.findOne({
+        where: { [Op.or]: [{ email: data.email }, { phone: data.phone }] }
+      });
+
+      if (isExist.email === data.email) {
         return res.status(400).json(response(false, 'Email already exist'));
       }
-      const phone = await User.findOne({ where: { phone: data.phone } });
-      if (phone) {
+      if (isExist.phone === data.phone) {
         return res.status(400).json(response(false, 'Phone number already exist'));
       }
 
@@ -155,4 +155,4 @@ const meService = {
   }
 };
 
-export default meService;
+module.exports = meService;

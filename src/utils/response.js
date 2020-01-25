@@ -5,4 +5,4 @@ const response = (status, msg, data, included) => ({
   included
 });
 
-export default response;
+module.exports = response;

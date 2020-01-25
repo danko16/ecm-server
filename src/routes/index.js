@@ -1,5 +1,5 @@
-import v1 from './v1';
+const v1 = require('./v1');
 
-export default {
+module.exports = {
   v1
 };

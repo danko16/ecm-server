@@ -1,11 +1,9 @@
-import 'module-alias/register';
-import utils from '@utils';
-import v1 from '@services/v1';
-import express from 'express';
-import { body, validationResult } from 'express-validator';
+require('module-alias/register');
+const { response } = require('@utils');
+const { meService } = require('@services/v1');
+const express = require('express');
+const { body, validationResult } = require('express-validator');
 
-const { meService } = v1;
-const { response } = utils;
 const router = express.Router();
 
 router.post(
