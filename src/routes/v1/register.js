@@ -21,10 +21,6 @@ router.post(
       .exists()
       .isEmail()
       .withMessage('must be a valid email'),
-    body('birthday')
-      .exists()
-      .isISO8601()
-      .withMessage('birthday format should be YYYY-MM-DD'),
     body('password', 'passwords must be at least 6 chars long')
       .exists()
       .isLength({

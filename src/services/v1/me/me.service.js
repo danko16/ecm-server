@@ -15,11 +15,14 @@ const meService = {
         where: { [Op.or]: [{ email: data.email }, { phone: data.phone }] }
       });
 
-      if (isExist.email === data.email) {
-        return res.status(400).json(response(false, 'Email already exist'));
-      }
-      if (isExist.phone === data.phone) {
-        return res.status(400).json(response(false, 'Phone number already exist'));
+      if (isExist) {
+        if (isExist.email === data.email && isExist.phone === data.phone) {
+          return res.status(400).json(response(false, 'Email and Phone already exist'));
+        } else if (isExist.email === data.email) {
+          return res.status(400).json(response(false, 'Email already exist'));
+        } else if (isExist.phone === data.phone) {
+          return res.status(400).json(response(false, 'Phone number already exist'));
+        }
       }
 
       const salt = bcrypt.genSaltSync(12);
@@ -59,11 +62,16 @@ const meService = {
         return res.status(400).json(response(false, 'Register failed'));
       }
 
-      const payload = Object.assign({}, accessToken.dataValues, {
+      const payload = Object.assign({
         user_id: user.id,
         full_name: user.full_name,
         email: user.email,
-        phone: user.phone
+        phone: user.phone,
+        access_token: accessToken.access_token,
+        refresh_token: accessToken.refresh_token,
+        client_id: 'app',
+        client_secret: null,
+        provider: 'local'
       });
 
       await transaction.commit();
@@ -92,7 +100,7 @@ const meService = {
       }
 
       if (bcrypt.compareSync(data.password, user.password)) {
-        const accessToken = await AccessToken.findOne({
+        let accessToken = await AccessToken.findOne({
           where: {
             user_id: user.id,
             client_id: 'app'
@@ -123,7 +131,7 @@ const meService = {
           });
         }
 
-        let payload = await AccessToken.findOne({
+        accessToken = await AccessToken.findOne({
           where: {
             user_id: user.id,
             client_id: 'app'
@@ -131,11 +139,16 @@ const meService = {
           include: [{ model: User }]
         });
 
-        payload = Object.assign({}, payload.dataValues, {
-          user_id: payload.user.id,
-          full_name: payload.user.full_name,
-          email: payload.user.email,
-          phone: payload.user.phone
+        const payload = Object.assign({
+          user_id: accessToken.user.id,
+          full_name: accessToken.user.full_name,
+          email: accessToken.user.email,
+          phone: accessToken.user.phone,
+          access_token: accessToken.access_token,
+          refresh_token: accessToken.refresh_token,
+          client_id: 'app',
+          client_secret: null,
+          provider: 'local'
         });
 
         if (!payload) {
@@ -145,7 +158,7 @@ const meService = {
         return res.status(200).json(response(true, 'Login successfully', payload));
       }
 
-      return res.status(422).json(response(false, 'Username atau password salah'));
+      return res.status(422).json(response(false, 'Wrong password'));
     } catch (error) {
       if (error.errors) {
         return res.status(400).json(response(false, error.errors));

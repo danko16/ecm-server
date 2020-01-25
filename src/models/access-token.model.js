@@ -59,7 +59,8 @@ module.exports = function(sequelize, DataTypes) {
   // eslint-disable-next-line no-unused-vars
   AccessToken.associate = function(models) {
     AccessToken.belongsTo(models.users, {
-      foreignKey: 'user_id'
+      foreignKey: 'user_id',
+      constraints: false
     });
   };
 
