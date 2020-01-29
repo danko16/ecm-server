@@ -34,6 +34,10 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: false,
         type: DataTypes.STRING
       },
+      avatar: {
+        allowNull: true,
+        type: DataTypes.STRING
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE
