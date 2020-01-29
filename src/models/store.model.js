@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TINYINT,
         defaultValue: 0
       },
-      avatar: {
+      image: {
         allowNull: true,
         type: DataTypes.STRING
       },
@@ -77,6 +77,10 @@ module.exports = (sequelize, DataTypes) => {
       constraints: false
     });
     Stores.hasMany(models.advertisements, {
+      foreignKey: 'store_id',
+      onDelete: 'CASCADE'
+    });
+    Stores.hasMany(models.products, {
       foreignKey: 'store_id',
       onDelete: 'CASCADE'
     });

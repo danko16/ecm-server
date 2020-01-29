@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Advertisements = sequelize.define(
-    'advertisements',
+  var Product = sequelize.define(
+    'products',
     {
       id: {
         allowNull: false,
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      store_id: {
+      stores_id: {
         allowNull: false,
         type: DataTypes.INTEGER,
         foreignKey: true,
@@ -17,6 +17,23 @@ module.exports = (sequelize, DataTypes) => {
           model: 'stores',
           key: 'id'
         }
+      },
+      category_id: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+        foreignKey: true,
+        references: {
+          model: 'categories',
+          key: 'id'
+        }
+      },
+      name: {
+        allowNull: false,
+        type: DataTypes.INTEGER
+      },
+      amount: {
+        allowNull: false,
+        type: DataTypes.INTEGER
       },
       image: {
         allowNull: false,
@@ -37,12 +54,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Advertisements.associate = function(models) {
+  Product.associate = function(models) {
     // associations can be defined here
-    Advertisements.belongsTo(models.stores, {
+    Product.belongsTo(models.categories, {
+      foreignKey: 'category_id',
+      constraints: false
+    });
+    Product.belongsTo(models.stores, {
       foreignKey: 'store_id',
       constraints: false
     });
   };
-  return Advertisements;
+  return Product;
 };

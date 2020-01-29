@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Advertisements = sequelize.define(
-    'advertisements',
+  var Category = sequelize.define(
+    'categories',
     {
       id: {
         allowNull: false,
@@ -9,14 +9,9 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      store_id: {
+      name: {
         allowNull: false,
-        type: DataTypes.INTEGER,
-        foreignKey: true,
-        references: {
-          model: 'stores',
-          key: 'id'
-        }
+        type: DataTypes.INTEGER
       },
       image: {
         allowNull: false,
@@ -37,12 +32,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Advertisements.associate = function(models) {
+  Category.associate = function(models) {
     // associations can be defined here
-    Advertisements.belongsTo(models.stores, {
+    Category.hasMany(models.products, {
       foreignKey: 'store_id',
       constraints: false
     });
   };
-  return Advertisements;
+  return Category;
 };

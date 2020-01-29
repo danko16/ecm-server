@@ -34,7 +34,7 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: false,
         type: DataTypes.STRING
       },
-      avatar: {
+      image: {
         allowNull: true,
         type: DataTypes.STRING
       },
