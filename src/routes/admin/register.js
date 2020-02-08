@@ -1,6 +1,6 @@
 require('module-alias/register');
 const { response } = require('@utils');
-const { meService } = require('@services/v1');
+const { adminService } = require('@services/v1');
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 
@@ -30,6 +30,9 @@ router.post(
       .exists()
       .isMobilePhone('id-ID')
       .withMessage('phone must be phone number format'),
+    body('role')
+      .exists()
+      .withMessage('role must be exist'),
     body('client_id', 'Client id cannot be empty').exists(),
     body('provider', 'Provider cannot be empty').exists()
   ],
@@ -38,7 +41,7 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(422).json(response(false, errors.array()));
     }
-    meService.register(req, res);
+    adminService.register(req, res);
   }
 );
 

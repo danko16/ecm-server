@@ -1,16 +1,16 @@
 const { Op } = require('sequelize');
-const { sequelize, users: User, access_tokens: AccessToken } = require('@models');
-const { response, jwt } = require('@utils');
+const { sequelize, admins: Admin, admin_tokens: AdminToken } = require('@models');
+const { response, jwtAdmin } = require('@utils');
 const { secret1, secret2 } = require('config');
 const bcrypt = require('bcryptjs');
 
-const meService = {
+const adminService = {
   register: async (req, res) => {
     const data = req.body;
     const transaction = await sequelize.transaction();
 
     try {
-      const isExist = await User.findOne({
+      const isExist = await Admin.findOne({
         where: { [Op.or]: [{ email: data.email }, { phone: data.phone }] }
       });
 
@@ -27,45 +27,48 @@ const meService = {
       const salt = bcrypt.genSaltSync(12);
       const hash = bcrypt.hashSync(data.password, salt);
 
-      const user = await User.create(
+      const admin = await Admin.create(
         {
           full_name: data.full_name,
           email: data.email,
           phone: data.phone,
+          role: data.role,
           password: hash
         },
         { transaction }
       );
 
-      if (!user) {
+      if (!admin) {
         return res.status(400).json(response(false, 'Register failed'));
       }
 
-      const refreshTokenSecret = user.password + secret2;
+      const refreshTokenSecret = admin.password + secret2;
 
-      const [token, refreshToken] = await jwt.createTokens(user, secret1, refreshTokenSecret);
+      const [token, refreshToken] = await jwtAdmin.createTokens(admin, secret1, refreshTokenSecret);
 
       const accessTokenPayload = {
         access_token: token,
         refresh_token: refreshToken,
         provider: data.provider,
-        user_id: user.id,
+        admin_id: admin.id,
         client_id: data.client_id
       };
 
-      const accessToken = await AccessToken.create(accessTokenPayload, { transaction });
+      const accessToken = await AdminToken.create(accessTokenPayload, { transaction });
 
       if (!accessToken) {
         await transaction.rollback();
         return res.status(400).json(response(false, 'Register failed'));
       }
+      console.log(refreshToken);
 
       const payload = Object.assign({
-        user_id: user.id,
-        full_name: user.full_name,
-        email: user.email,
-        phone: user.phone,
-        image: user.image,
+        admin_id: admin.id,
+        full_name: admin.full_name,
+        email: admin.email,
+        phone: admin.phone,
+        role: accessToken.admin.role,
+        image: accessToken.admin.image,
         access_token: accessToken.access_token,
         refresh_token: accessToken.refresh_token,
         client_id: accessToken.client_id,
@@ -87,61 +90,66 @@ const meService = {
     const { data } = req.body;
 
     try {
-      const user = await User.findOne({
+      const admin = await Admin.findOne({
         where: {
           [Op.or]: [{ email: data.email_phone }, { phone: data.email_phone }]
         }
       });
 
-      if (!user) {
+      if (!admin) {
         return res.status(400).json(response(false, 'User not found!'));
       }
 
-      if (bcrypt.compareSync(data.password, user.password)) {
-        let accessToken = await AccessToken.findOne({
+      if (bcrypt.compareSync(data.password, admin.password)) {
+        let accessToken = await AdminToken.findOne({
           where: {
-            user_id: user.id,
+            admin_id: admin.id,
             client_id: data.client_id
           }
         });
 
-        const refreshTokenSecret = user.password + secret2;
+        const refreshTokenSecret = admin.password + secret2;
 
-        const [token, refreshToken] = await jwt.createTokens(user, secret1, refreshTokenSecret);
+        const [token, refreshToken] = await jwtAdmin.createTokens(
+          admin,
+          secret1,
+          refreshTokenSecret
+        );
 
         const accessTokenPayload = {
           access_token: token,
           refresh_token: refreshToken,
           provider: data.provider,
-          user_id: user.id,
+          admin_id: admin.id,
           client_id: data.client_id
         };
 
         if (!accessToken) {
-          await AccessToken.create(accessTokenPayload);
+          await AdminToken.create(accessTokenPayload);
         } else {
-          await AccessToken.update(accessTokenPayload, {
+          await AdminToken.update(accessTokenPayload, {
             where: {
-              user_id: user.id,
+              admin_id: admin.id,
               client_id: data.client_id
             }
           });
         }
 
-        accessToken = await AccessToken.findOne({
+        accessToken = await AdminToken.findOne({
           where: {
-            user_id: user.id,
+            admin_id: admin.id,
             client_id: data.client_id
           },
-          include: [{ model: User }]
+          include: [{ model: Admin }]
         });
 
         const payload = Object.assign({
-          user_id: accessToken.user.id,
-          full_name: accessToken.user.full_name,
-          email: accessToken.user.email,
-          phone: accessToken.user.phone,
-          image: user.image,
+          admin_id: accessToken.admin.id,
+          full_name: accessToken.admin.full_name,
+          email: accessToken.admin.email,
+          phone: accessToken.admin.phone,
+          role: accessToken.admin.role,
+          image: accessToken.admin.image,
           access_token: accessToken.access_token,
           refresh_token: accessToken.refresh_token,
           client_id: accessToken.client_id,
@@ -166,4 +174,4 @@ const meService = {
   }
 };
 
-module.exports = meService;
+module.exports = adminService;

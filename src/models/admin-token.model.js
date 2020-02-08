@@ -1,6 +1,6 @@
 module.exports = function(sequelize, DataTypes) {
-  const AccessToken = sequelize.define(
-    'access_tokens',
+  const AdminToken = sequelize.define(
+    'admin_tokens',
     {
       id: {
         allowNull: false,
@@ -8,12 +8,12 @@ module.exports = function(sequelize, DataTypes) {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      user_id: {
+      admin_id: {
         allowNull: false,
         type: DataTypes.INTEGER,
         foreignKey: true,
         references: {
-          model: 'users',
+          model: 'admins',
           key: 'id'
         }
       },
@@ -53,12 +53,12 @@ module.exports = function(sequelize, DataTypes) {
   );
 
   // eslint-disable-next-line no-unused-vars
-  AccessToken.associate = function(models) {
-    AccessToken.belongsTo(models.users, {
-      foreignKey: 'user_id',
+  AdminToken.associate = function(models) {
+    AdminToken.belongsTo(models.admins, {
+      foreignKey: 'admin_id',
       constraints: false
     });
   };
 
-  return AccessToken;
+  return AdminToken;
 };

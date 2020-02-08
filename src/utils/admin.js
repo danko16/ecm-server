@@ -1,10 +1,10 @@
 require('module-alias/register');
-const { access_tokens: AccessToken } = require('@models');
-const jwt = require('./jwt');
+const { admin_tokens: AdminToken } = require('@models');
+const jwt = require('./jwt-admin');
 const response = require('./response');
 const { secret1, secret2 } = require('config');
 
-const auth = async (req, res, next) => {
+const adminAuth = async (req, res, next) => {
   const Jwt = new jwt();
   const clientId = req.headers['x-client-id'];
   const provider = req.headers['x-provider'];
@@ -35,8 +35,8 @@ const auth = async (req, res, next) => {
     !refreshToken[1] ||
     token[1] === 'null' ||
     refreshToken[1] === 'null' ||
-    token[0] !== 'Bearer' ||
-    refreshToken[0] !== 'Bearer'
+    token[0] !== 'Admin' ||
+    refreshToken[0] !== 'Admin'
   ) {
     return res.status(403).json(response(false, 'Invalid token or refreshToken'));
   }
@@ -48,11 +48,11 @@ const auth = async (req, res, next) => {
   try {
     const parseToken = Jwt.verify(token, secret1);
 
-    const { user } = parseToken;
+    const { admin } = parseToken;
 
-    const accessToken = await AccessToken.findOne({
+    const adminToken = await AdminToken.findOne({
       where: {
-        user_id: user.id,
+        admin_id: admin.id,
         access_token: token,
         refresh_token: refreshToken,
         client_id: clientId,
@@ -60,15 +60,16 @@ const auth = async (req, res, next) => {
       }
     });
 
-    if (!accessToken) {
+    if (!adminToken) {
       return res.status(403).json(response(false, 'Please do login to get valid token'));
     }
 
-    res.local.user = {
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      phone: user.phone
+    res.local.admin = {
+      id: admin.id,
+      full_name: admin.full_name,
+      email: admin.email,
+      phone: admin.phone,
+      role: admin.role
     };
   } catch (error) {
     try {
@@ -79,11 +80,11 @@ const auth = async (req, res, next) => {
         res.set('x-refresh-token', newTokens.refreshToken);
       }
 
-      const { user } = newTokens;
+      const { admin } = newTokens;
 
-      const accessToken = await AccessToken.findOne({
+      const adminToken = await AdminToken.findOne({
         where: {
-          user_id: user.id,
+          admin_id: admin.id,
           access_token: token,
           refresh_token: refreshToken,
           client_id: clientId,
@@ -91,20 +92,21 @@ const auth = async (req, res, next) => {
         }
       });
 
-      if (!accessToken) {
+      if (!adminToken) {
         return res.status(403).json(response(false, 'Please do login to get valid token'));
       }
 
-      await accessToken.update({
+      await adminToken.update({
         access_token: newTokens.token,
         refresh_token: newTokens.refreshToken
       });
 
-      res.local.user = {
-        id: user.id,
-        full_name: user.full_name,
-        email: user.email,
-        phone: user.phone
+      res.local.admin = {
+        id: admin.id,
+        full_name: admin.full_name,
+        email: admin.email,
+        phone: admin.phone,
+        role: admin.role
       };
     } catch (error) {
       return res.status(403).json(response(false, error.message));
@@ -114,4 +116,4 @@ const auth = async (req, res, next) => {
   next();
 };
 
-module.exports = auth;
+module.exports = adminAuth;

@@ -1,32 +1,32 @@
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
-const { users: User } = require('@models');
+const { admins: Admin } = require('@models');
 
-class Jwt {
+class JwtAdmin {
   constructor() {}
 
   verify(token, secret) {
     return jwt.verify(token, secret);
   }
 
-  async createTokens(user, secret, refreshSecret) {
+  async createTokens(admin, secret, refreshSecret) {
     const createToken = jwt.sign(
       {
-        user: _.pick(user, ['id', 'full_name', 'email', 'phone'])
+        admin: _.pick(admin, ['id', 'full_name', 'email', 'phone', 'role'])
       },
       secret,
       {
-        expiresIn: 60 * 30
+        expiresIn: 60
       }
     );
 
     const createRefreshToken = jwt.sign(
       {
-        user: _.pick(user, ['id', 'full_name', 'email', 'phone'])
+        admin: _.pick(admin, ['id', 'full_name', 'email', 'phone', 'role'])
       },
       refreshSecret,
       {
-        expiresIn: '3h'
+        expiresIn: 60
       }
     );
 
@@ -34,25 +34,25 @@ class Jwt {
   }
 
   async refreshTokens(refreshToken, SECRET, SECRET2) {
-    let userId = 0;
+    let adminId = 0;
     try {
-      const { user } = jwt.decode(refreshToken);
-      userId = user.id;
+      const { admin } = jwt.decode(refreshToken);
+      adminId = admin.id;
     } catch (err) {
       throw new Error(err);
     }
 
-    if (!userId) {
+    if (!adminId) {
       throw new Error('Invalid refresh token');
     }
 
-    const user = await User.findOne({ where: { id: userId }, raw: true });
+    const admin = await Admin.findOne({ where: { id: adminId }, raw: true });
 
-    if (!user) {
-      throw new Error('User not found');
+    if (!admin) {
+      throw new Error('Admin not found');
     }
 
-    const refreshSecret = user.password + SECRET2;
+    const refreshSecret = admin.password + SECRET2;
 
     try {
       jwt.verify(refreshToken, refreshSecret);
@@ -63,14 +63,14 @@ class Jwt {
       throw new Error(err.message);
     }
 
-    const [newToken, newRefreshToken] = await this.createTokens(user, SECRET, refreshSecret);
+    const [newToken, newRefreshToken] = await this.createTokens(admin, SECRET, refreshSecret);
 
     return {
       token: newToken,
       refreshToken: newRefreshToken,
-      user
+      admin
     };
   }
 }
 
-module.exports = Jwt;
+module.exports = JwtAdmin;

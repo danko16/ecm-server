@@ -9,15 +9,6 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      store_id: {
-        allowNull: false,
-        type: DataTypes.INTEGER,
-        foreignKey: true,
-        references: {
-          model: 'stores',
-          key: 'id'
-        }
-      },
       image: {
         allowNull: false,
         type: DataTypes.STRING
@@ -39,10 +30,6 @@ module.exports = (sequelize, DataTypes) => {
 
   Advertisements.associate = function(models) {
     // associations can be defined here
-    Advertisements.belongsTo(models.stores, {
-      foreignKey: 'store_id',
-      constraints: false
-    });
   };
   return Advertisements;
 };

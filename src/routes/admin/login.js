@@ -1,6 +1,6 @@
 require('module-alias/register');
 const { response } = require('@utils');
-const { meService } = require('@services/v1');
+const { adminService } = require('@services/v1');
 const express = require('express');
 const { body, oneOf, validationResult } = require('express-validator');
 
@@ -35,7 +35,7 @@ router.post(
       return res.status(422).json(response(false, errors.array()));
     }
 
-    meService.login(req, res);
+    adminService.login(req, res);
   }
 );
 
