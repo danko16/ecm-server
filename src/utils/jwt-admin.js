@@ -16,7 +16,7 @@ class JwtAdmin {
       },
       secret,
       {
-        expiresIn: 60
+        expiresIn: 60 * 30
       }
     );
 
@@ -26,7 +26,7 @@ class JwtAdmin {
       },
       refreshSecret,
       {
-        expiresIn: 60
+        expiresIn: '3h'
       }
     );
 

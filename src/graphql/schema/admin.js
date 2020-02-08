@@ -31,7 +31,7 @@ const resolvers = {
         console.log(error);
       }
     },
-    admins: async () => await Admin.all()
+    admins: async () => await Admin.findAll()
   }
 };
 
