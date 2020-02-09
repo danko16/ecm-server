@@ -1,6 +1,6 @@
 module.exports = {
   host: 'localhost',
-  port: 3000,
+  port: 3001,
   public: 'public',
   uploads: 'public/uploads',
   documents: 'public/documents',

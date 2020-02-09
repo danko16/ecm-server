@@ -2,11 +2,11 @@ const response = require('./response');
 const Jwt = require('./jwt');
 const JwtAdmin = require('./jwt-admin');
 const auth = require('./auth');
-const admin = require('./admin');
+const adminAuth = require('./admin-auth');
 
 module.exports = {
   auth,
-  admin,
+  adminAuth,
   jwt: new Jwt(),
   jwtAdmin: new JwtAdmin(),
   response

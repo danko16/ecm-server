@@ -1,10 +1,27 @@
 const { Op } = require('sequelize');
+const _ = require('lodash');
 const { sequelize, admins: Admin, admin_tokens: AdminToken } = require('@models');
 const { response, jwtAdmin } = require('@utils');
 const { secret1, secret2 } = require('config');
 const bcrypt = require('bcryptjs');
 
 const adminService = {
+  get: async (req, res) => {
+    const { admin } = res.local;
+    try {
+      const me = await Admin.findOne({ where: { id: admin.id } });
+      if (!me) {
+        return res.status(400).json(response(false, 'Admin not found'));
+      }
+      const payload = _.pick(me, ['id', 'full_name', 'email', 'phone', 'role', 'image']);
+      return res.status(200).json(response(true, 'Success get admin info', payload));
+    } catch (error) {
+      if (error.errors) {
+        return res.status(400).json(response(false, error.errors));
+      }
+      return res.status(400).json(response(false, error.message));
+    }
+  },
   register: async (req, res) => {
     const data = req.body;
     const transaction = await sequelize.transaction();
