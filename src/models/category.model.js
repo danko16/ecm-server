@@ -9,19 +9,28 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      name: {
+      admin_id: {
         allowNull: false,
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        foreignKey: true,
+        references: {
+          model: 'admins',
+          key: 'id'
+        }
       },
-      image: {
+      name: {
         allowNull: false,
         type: DataTypes.STRING
       },
-      created_at: {
+      image: {
+        allowNull: true,
+        type: DataTypes.STRING
+      },
+      createdAt: {
         allowNull: false,
         type: DataTypes.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: DataTypes.DATE
       }
@@ -34,9 +43,14 @@ module.exports = (sequelize, DataTypes) => {
 
   Category.associate = function(models) {
     // associations can be defined here
+    Category.belongsTo(models.admins, {
+      foreignKey: 'admin_id',
+      constraints: false
+    });
+
     Category.hasMany(models.products, {
       foreignKey: 'product_id',
-      constraints: false
+      onDelete: 'CASCADE'
     });
   };
   return Category;

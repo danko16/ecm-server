@@ -63,6 +63,14 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'admin_id',
       onDelete: 'CASCADE'
     });
+    Admin.hasMany(models.categories, {
+      foreignKey: 'admin_id',
+      onDelete: 'CASCADE'
+    });
+    Admin.hasMany(models.products, {
+      foreignKey: 'admin_id',
+      onDelete: 'CASCADE'
+    });
   };
 
   Admin.prototype.toJSON = function() {

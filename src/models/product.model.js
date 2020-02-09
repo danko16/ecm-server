@@ -18,9 +18,18 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       },
+      admin_id: {
+        allowNull: false,
+        type: DataTypes.INTEGER,
+        foreignKey: true,
+        references: {
+          model: 'admins',
+          key: 'id'
+        }
+      },
       name: {
         allowNull: false,
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING
       },
       amount: {
         allowNull: false,
@@ -30,11 +39,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.STRING
       },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: DataTypes.DATE
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: DataTypes.DATE
       }
@@ -47,6 +56,11 @@ module.exports = (sequelize, DataTypes) => {
 
   Product.associate = function(models) {
     // associations can be defined here
+    Product.belongsTo(models.admins, {
+      foreignKey: 'admin_id',
+      constraints: false
+    });
+
     Product.belongsTo(models.categories, {
       foreignKey: 'category_id',
       constraints: false

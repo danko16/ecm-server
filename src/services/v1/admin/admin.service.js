@@ -60,15 +60,14 @@ const adminService = {
         await transaction.rollback();
         return res.status(400).json(response(false, 'Register failed'));
       }
-      console.log(refreshToken);
 
       const payload = Object.assign({
         admin_id: admin.id,
         full_name: admin.full_name,
         email: admin.email,
         phone: admin.phone,
-        role: accessToken.admin.role,
-        image: accessToken.admin.image,
+        role: admin.role,
+        image: admin.image,
         access_token: accessToken.access_token,
         refresh_token: accessToken.refresh_token,
         client_id: accessToken.client_id,
