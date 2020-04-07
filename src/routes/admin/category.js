@@ -1,9 +1,10 @@
 require('module-alias/register');
 const express = require('express');
 const { response } = require('@utils');
+const { categories: Category } = require('@models');
 const multer = require('multer');
 const config = require('config');
-const { body, validationResult } = require('express-validator/check');
+const { query, validationResult } = require('express-validator/check');
 
 const router = express.Router();
 
@@ -25,17 +26,40 @@ const upload = multer({
   }
 }).single('file');
 
-router.post('/', [body('name', 'name should be present')], (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json(response(false, errors.array()));
-  }
-  upload(req, res, function(error) {
-    if (error) {
-      return res.status(422).json(response(false, error.message));
+router.post(
+  '/',
+  [query('name', 'name should be present'), query('desc', 'description should be present')],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(response(false, errors.array()));
     }
-    res.status(200).json(response(true, 'file uploaded'));
-  });
-});
+    const { name, desc } = req.query;
+    const category = await Category.findOne({ where: { name } });
+    if (category) {
+      return res.status(400).json(response(false, 'category already exist'));
+    }
+    upload(req, res, async function(error) {
+      const { admin } = res.local;
+      const { file } = req;
+
+      const { filename } = file;
+      const url = `${config.host}:${config.port}/uploads/${filename}`;
+
+      if (error) {
+        return res.status(422).json(response(false, error.message));
+      }
+
+      await Category.create({
+        admin_id: admin.id,
+        name,
+        desc,
+        image: url
+      });
+
+      return res.status(200).json(response(true, 'file uploaded'));
+    });
+  }
+);
 
 module.exports = router;

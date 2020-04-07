@@ -1,5 +1,5 @@
 module.exports = {
-  host: 'localhost',
+  host: 'http://localhost',
   port: 3001,
   public: 'public',
   uploads: 'public/uploads',
