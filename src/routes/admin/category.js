@@ -26,6 +26,29 @@ const upload = multer({
   }
 }).single('file');
 
+router.get('/', async (req, res) => {
+  try {
+    const categories = await Category.findAll();
+    return res.status(200).json(response(true, 'berhasil mendapatkan categories', categories));
+  } catch (error) {
+    return res.status(400).json(response(false, error));
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findOne({ where: { id } });
+    if (!category) {
+      return res.status(400).json(response(false, 'category not exist'));
+    }
+    await Category.destroy({ where: { id } });
+    return res.status(200).json(response(true, 'berhasil menghapus kategori'));
+  } catch (error) {
+    return res.status(400).json(response(false, error));
+  }
+});
+
 router.post(
   '/',
   [query('name', 'name should be present'), query('desc', 'description should be present')],
